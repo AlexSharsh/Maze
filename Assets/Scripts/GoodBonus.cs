@@ -1,21 +1,42 @@
-using System.Collections;
+using System;
 using System.Collections.Generic;
 using UnityEngine;
 
 namespace Maze
 {
-    public class GoodBonus : MonoBehaviour
+    public class GoodBonus : Bonus, IFly, IFlicker
     {
-        // Start is called before the first frame update
-        void Start()
-        {
+        private float HightFly = 3f;
+        [SerializeField] private Material _material;
+        public int Point = 1;
+        public event Action<int> AddPoints = delegate (int i){ };
 
+        void Awake()
+        {
+            _material = GetComponent<Renderer>().material;
+            _transform = GetComponent<Transform>();
+        }   
+
+        
+        public override void Update()
+        {
+            Fly();
+            Flick();
         }
 
-        // Update is called once per frame
-        void Update()
+        public void Fly()
         {
+            _transform.position = new Vector3(_transform.position.x, Mathf.PingPong(Time.time, HightFly), _transform.position.z);
+        }
 
+        public void Flick()
+        {
+            _material.color = new Color(_material.color.r, _material.color.g, _material.color.b, Mathf.PingPong(Time.time, 1.0f));
+        }
+
+        protected override void Interaction()
+        {
+            AddPoints.Invoke(Point);
         }
     }
 }

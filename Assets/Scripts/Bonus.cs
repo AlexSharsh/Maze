@@ -8,7 +8,7 @@ namespace Maze
     {
         private bool _isInteractable;
         public Transform _transform;
-
+        protected Color _color;
         public bool IsInteractable
         {
             get { return _isInteractable; }
@@ -20,14 +20,15 @@ namespace Maze
             }
         }
 
-        void Awake()
-        {
-            _transform = GetComponent<Transform>();
-        }
-
         void Start()
         {
             IsInteractable = true;
+            _color = Random.ColorHSV();
+
+            if(TryGetComponent(out Renderer renderer))
+            {
+                renderer.sharedMaterial.color = _color;
+            }
         }
 
         private void OnTriggerEnter(Collider other)

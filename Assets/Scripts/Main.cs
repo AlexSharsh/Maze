@@ -8,6 +8,8 @@ namespace Maze
         private ListExecuteObjects _interactiveObjects;
         private InputController _inputController;
 
+        [SerializeField] private BadBonus badBonus;
+
         [SerializeField] private GameObject _player;
 
         void Awake()
@@ -16,8 +18,14 @@ namespace Maze
             _interactiveObjects = new ListExecuteObjects();
 
             _interactiveObjects.AddExecute(_inputController);
+
+            badBonus.OnCaughtPlayer += GameOver;
         }
 
+        public void GameOver(string name, Color color)
+        {
+            Debug.Log(name + " color: " + color);
+        }
         
         void Update()
         {
