@@ -1,6 +1,8 @@
 using System;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.UI;
+using UnityEngine.SceneManagement;
 
 namespace Maze
 {
@@ -21,8 +23,26 @@ namespace Maze
 
         [SerializeField] private GameObject _player;
 
+        ViewEndGame _viewEndGame;
+        [SerializeField] private GameObject _gameOverPrefab;
+
+        ViewBonus _viewBonus;
+        [SerializeField] private GameObject _viewBonusPrefab;
+
+        [SerializeField] private Button _restartButton;
+
+        private int GoodBonusCount;
+
         void Awake()
         {
+            //GameObject _gameOverPrefab = Resources.Load<GameObject>("Bonus");
+            //GameObject _viewBonusPrefab = Resources.Load<GameObject>("EndGame");
+
+            _viewEndGame = new ViewEndGame(_gameOverPrefab);
+            _viewBonus = new ViewBonus(_viewBonusPrefab);
+            _viewBonus.Display(0);
+            _restartButton.onClick.AddListener(RestartGame);
+
             _inputController = new InputController(_player.GetComponent<Unit>());
             _interactiveObjects = new ListExecuteObjects();
 
@@ -51,10 +71,31 @@ namespace Maze
         public void GameOver(string name, Color color)
         {
             Debug.Log(name + " color: " + color);
+            _viewEndGame.GameOver();
+
+            Time.timeScale = 0f;
         }
+
+        private void Win()
+        {
+            if (Time.timeScale > 0)
+            {
+                _viewEndGame.Win();
+                Time.timeScale = 0f;
+            }
+        }
+
         public void Bonus(int points)
         {
             Debug.Log("Bonus: " + points);
+            GoodBonusCount += points;
+            _viewBonus.Display(GoodBonusCount);
+        }
+
+        private void RestartGame()
+        {
+            SceneManager.LoadScene(0);
+            Time.timeScale = 1f;
         }
 
         void Update()
@@ -68,6 +109,21 @@ namespace Maze
 
                 _interactiveObjects[i].Update();
             }
+
+            if (IsWin())
+            {
+                Win();
+            }
+        }
+
+        private bool IsWin()
+        {
+            if (GoodBonusCount == _goodBonusPointsListObj.Count)
+            {
+                return true;
+            }
+
+            return false;
         }
     }
 }

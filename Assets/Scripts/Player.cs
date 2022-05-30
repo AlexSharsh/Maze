@@ -30,5 +30,26 @@ namespace Maze
                 Debug.Log("No Rigidbody");
             }
         }
+
+        public override void Jump()
+        {
+            if (!isJump)
+            {
+                if (_rb)
+                {
+                    _rb.AddForce(Vector3.up * JumpForce);
+                    isJump = true;
+                }
+                else
+                {
+                    Debug.Log("No Rigidbody");
+                }
+            }
+        }
+
+        private void OnCollisionEnter(Collision collision)
+        {
+            isJump = false;
+        }
     }
 }
