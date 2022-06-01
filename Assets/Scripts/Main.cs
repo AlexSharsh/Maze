@@ -11,6 +11,8 @@ namespace Maze
         private ListExecuteObjects _interactiveObjects;
         private InputController _inputController;
 
+        private CameraController _cameraController;
+
         private BadBonusPoints _BadBonusPoints;
         private GoodBonusPoints _GoodBonusPoints;
         private List<GameObject> _badBonusPointsListObj;
@@ -30,6 +32,7 @@ namespace Maze
         [SerializeField] private GameObject _viewBonusPrefab;
 
         [SerializeField] private Button _restartButton;
+        [SerializeField] public Camera MainCamera;
 
         private int GoodBonusCount;
 
@@ -37,6 +40,8 @@ namespace Maze
         {
             //GameObject _gameOverPrefab = Resources.Load<GameObject>("Bonus");
             //GameObject _viewBonusPrefab = Resources.Load<GameObject>("EndGame");
+            //MainCamera = Camera.main;    
+            _cameraController = new CameraController(_player.transform, MainCamera.transform);
 
             _viewEndGame = new ViewEndGame(_gameOverPrefab);
             _viewBonus = new ViewBonus(_viewBonusPrefab);
@@ -53,9 +58,9 @@ namespace Maze
             _goodBonusPointsListObj = _GoodBonusPoints.Init(_goodBonusPrefab, _GoodBonusPointsList);
 
             _interactiveObjects.AddExecute(_inputController);
+            _interactiveObjects.AddExecute(_cameraController);
 
-
-            for(int i = 0; i < _badBonusPointsListObj.Count; i++)
+            for (int i = 0; i < _badBonusPointsListObj.Count; i++)
             {
                 BadBonus badBonus = _badBonusPointsListObj[i].gameObject.GetComponentInChildren<BadBonus>();
                 badBonus.OnCaughtPlayer += GameOver;
