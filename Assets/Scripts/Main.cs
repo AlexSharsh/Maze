@@ -8,6 +8,7 @@ namespace Maze
 {
     public class Main : MonoBehaviour
     {
+        private Reference _reference;
         private ListExecuteObjects _interactiveObjects;
         private InputController _inputController;
 
@@ -26,27 +27,27 @@ namespace Maze
         [SerializeField] private GameObject _player;
 
         ViewEndGame _viewEndGame;
-        [SerializeField] private GameObject _gameOverPrefab;
-
         ViewBonus _viewBonus;
-        [SerializeField] private GameObject _viewBonusPrefab;
 
         [SerializeField] private Button _restartButton;
-        [SerializeField] public Camera MainCamera;
+        [SerializeField] private Button _pauseButton;
 
         private int GoodBonusCount;
 
         void Awake()
         {
-            //GameObject _gameOverPrefab = Resources.Load<GameObject>("Bonus");
-            //GameObject _viewBonusPrefab = Resources.Load<GameObject>("EndGame");
-            //MainCamera = Camera.main;    
-            _cameraController = new CameraController(_player.transform, MainCamera.transform);
+            _reference = new Reference();
 
-            _viewEndGame = new ViewEndGame(_gameOverPrefab);
-            _viewBonus = new ViewBonus(_viewBonusPrefab);
+            _cameraController = new CameraController(_player.transform, _reference.MainCamera.transform);
+
+            _viewEndGame = new ViewEndGame(_reference.GameLabel);
+            _viewBonus = new ViewBonus(_reference.BonusLabel);
+            //_restartButton.gameObject.SetActive(false);
+            //_pauseButton.gameObject.SetActive(false);
             _viewBonus.Display(0);
+
             _restartButton.onClick.AddListener(RestartGame);
+            _pauseButton.onClick.AddListener(PauseGame);
 
             _inputController = new InputController(_player.GetComponent<Unit>());
             _interactiveObjects = new ListExecuteObjects();
@@ -69,16 +70,36 @@ namespace Maze
             for (int i = 0; i < _goodBonusPointsListObj.Count; i++)
             {
                 GoodBonus goodBonus = _goodBonusPointsListObj[i].gameObject.GetComponentInChildren<GoodBonus>();
-                goodBonus.AddPoints += Bonus;
+                goodBonus.AddPoints += AddBonus;
             }
+
+            //foreach (var item in _interactiveObjects)
+            //{
+            //    if (item is GoodBonus goodBonus)
+            //    {
+            //        goodBonus.AddPoints += AddBonus;
+            //    }
+
+            //    if (item is BadBonus badBonus)
+            //    {
+            //        badBonus.OnCaughtPlayer += GameOver;
+            //    }
+            //}
+        }
+
+        private void AddBonus(int value)
+        {
+            GoodBonusCount += value;
+            _viewBonus.Display(GoodBonusCount);
+            Debug.Log("Bonus: " + GoodBonusCount);
         }
 
         public void GameOver(string name, Color color)
         {
-            Debug.Log(name + " color: " + color);
             _viewEndGame.GameOver();
-
             Time.timeScale = 0f;
+            _pauseButton.interactable = false;
+            Debug.Log(name + " color: " + color);
         }
 
         private void Win()
@@ -87,20 +108,26 @@ namespace Maze
             {
                 _viewEndGame.Win();
                 Time.timeScale = 0f;
+                _pauseButton.interactable = false;
             }
-        }
-
-        public void Bonus(int points)
-        {
-            Debug.Log("Bonus: " + points);
-            GoodBonusCount += points;
-            _viewBonus.Display(GoodBonusCount);
         }
 
         private void RestartGame()
         {
             SceneManager.LoadScene(0);
             Time.timeScale = 1f;
+        }
+
+        private void PauseGame()
+        {
+            if(Time.timeScale > 0)
+            {
+                Time.timeScale = 0f;
+            }
+            else
+            {
+                Time.timeScale = 1f;
+            }
         }
 
         void Update()
