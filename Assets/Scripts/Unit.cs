@@ -17,5 +17,6 @@ namespace Maze
 
         public abstract void Move(float x, float y, float z);
         public abstract void Jump();
+        public abstract void SavePlayer();
     }
 }

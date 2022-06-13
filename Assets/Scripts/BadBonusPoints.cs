@@ -13,7 +13,7 @@ namespace Maze
             for (int i = 0; i < BadBonusListPoints.Length; i++)
             {
                 GameObject badBonus = Instantiate(BadBonusPrefab, BadBonusListPoints[i].transform.position, BadBonusListPoints[i].transform.rotation);
-                badBonus.active = true;
+                badBonus.SetActive(true);
                 objList.Add(badBonus);
             }
 

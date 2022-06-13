@@ -25,6 +25,11 @@ namespace Maze
             {
                 _player.Jump();
             }
+
+            if (Input.GetKeyDown(KeyCode.Q))
+            {
+                _player.SavePlayer();
+            }
         }
     }
 }

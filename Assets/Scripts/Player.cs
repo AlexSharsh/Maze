@@ -4,8 +4,20 @@ using UnityEngine;
 
 namespace Maze
 {
+    public struct PlayerData
+    {
+        public string PlayerName;
+        public int PlayerHealth;
+        public bool PlayerDead;
+        public SVect3 PlayerPosition;
+    }
+
     public sealed class Player : Unit
     {
+        PlayerData SinglePlayerData = new PlayerData();
+
+        private ISaveData _data;
+
         private void Awake()
         {
             _transform = transform;
@@ -17,6 +29,13 @@ namespace Maze
 
             isDead = false;
             Health = 100;
+
+            SinglePlayerData.PlayerHealth = Health;
+            SinglePlayerData.PlayerDead = isDead;
+            SinglePlayerData.PlayerName = gameObject.name;
+
+            //_data = new JSONData();
+            _data = new StreamData();
         }
 
         public override void Move(float x, float y, float z)
@@ -29,6 +48,8 @@ namespace Maze
             {
                 Debug.Log("No Rigidbody");
             }
+
+            SinglePlayerData.PlayerPosition = transform.position;
         }
 
         public override void Jump()
@@ -50,6 +71,16 @@ namespace Maze
         private void OnCollisionEnter(Collision collision)
         {
             isJump = false;
+        }
+
+        public override void SavePlayer()
+        {
+            _data.SaveData(SinglePlayerData);
+            PlayerData NewPlayer = _data.Load();
+
+            Debug.Log(NewPlayer.PlayerName);
+            Debug.Log(NewPlayer.PlayerPosition);
+            Debug.Log(NewPlayer.PlayerHealth);
         }
     }
 }
