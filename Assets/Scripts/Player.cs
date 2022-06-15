@@ -18,6 +18,9 @@ namespace Maze
 
         private ISaveData _data;
 
+        [Header("Метки")]
+        [SerializeField] Transform PlayerLabel;
+
         private void Awake()
         {
             _transform = transform;
@@ -35,7 +38,8 @@ namespace Maze
             SinglePlayerData.PlayerName = gameObject.name;
 
             //_data = new JSONData();
-            _data = new StreamData();
+            //_data = new StreamData();
+            _data = new XMLData();
         }
 
         public override void Move(float x, float y, float z)
@@ -49,6 +53,7 @@ namespace Maze
                 Debug.Log("No Rigidbody");
             }
 
+            PlayerLabel.position = new Vector3(transform.position.x, PlayerLabel.position.y, transform.position.z);
             SinglePlayerData.PlayerPosition = transform.position;
         }
 
